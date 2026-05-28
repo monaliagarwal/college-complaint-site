@@ -1,0 +1,61 @@
+{% extends 'complaints/base.html' %}
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="mb-3">
+      <a href="{% url 'student_dashboard' %}" class="text-decoration-none text-muted">
+        ← Back to Dashboard
+      </a>
+    </div>
+    <div class="card shadow-sm p-4">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <h4 class="mb-0">{{ complaint.title }}</h4>
+        <div class="d-flex gap-2">
+          {% if complaint.urgency == 'high' %}
+            <span class="badge bg-danger">High Urgency</span>
+          {% elif complaint.urgency == 'medium' %}
+            <span class="badge bg-warning text-dark">Medium Urgency</span>
+          {% else %}
+            <span class="badge bg-secondary">Low Urgency</span>
+          {% endif %}
+          {% if complaint.status == 'resolved' %}
+            <span class="badge bg-success">Resolved</span>
+          {% elif complaint.status == 'in_progress' %}
+            <span class="badge bg-info text-dark">In Progress</span>
+          {% else %}
+            <span class="badge bg-secondary">Pending</span>
+          {% endif %}
+        </div>
+      </div>
+      <hr>
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <small class="text-muted">Category</small>
+          <p class="fw-semibold text-capitalize mb-0">{{ complaint.category }}</p>
+        </div>
+        <div class="col-md-4">
+          <small class="text-muted">Submitted</small>
+          <p class="fw-semibold mb-0">{{ complaint.created_at|date:"d M Y" }}</p>
+        </div>
+        <div class="col-md-4">
+          <small class="text-muted">Last Updated</small>
+          <p class="fw-semibold mb-0">{{ complaint.updated_at|date:"d M Y" }}</p>
+        </div>
+      </div>
+      <hr>
+      <div class="mb-4">
+        <small class="text-muted">Your Complaint</small>
+        <p class="mt-1">{{ complaint.description }}</p>
+      </div>
+      {% if complaint.ai_summary %}
+      <div class="p-3 rounded" style="background:#f0f4ff; border-left: 4px solid #4f46e5;">
+        <small class="text-muted">🤖 AI Summary</small>
+        <p class="mb-0 mt-1">{{ complaint.ai_summary }}</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

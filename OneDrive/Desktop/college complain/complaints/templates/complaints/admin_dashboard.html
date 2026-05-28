@@ -1,0 +1,132 @@
+{% extends 'complaints/base.html' %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">Admin Dashboard</h4>
+  <span class="text-muted">All complaints — sorted by urgency</span>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+  <div class="col-md-3">
+    <div class="card text-center p-3 shadow-sm">
+      <h2 class="fw-bold">{{ total }}</h2>
+      <p class="text-muted mb-0">Total</p>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center p-3 shadow-sm border-danger">
+      <h2 class="fw-bold text-danger">{{ high_urgency }}</h2>
+      <p class="text-muted mb-0">High Urgency</p>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center p-3 shadow-sm border-warning">
+      <h2 class="fw-bold text-warning">{{ pending }}</h2>
+      <p class="text-muted mb-0">Pending</p>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center p-3 shadow-sm border-success">
+      <h2 class="fw-bold text-success">{{ resolved }}</h2>
+      <p class="text-muted mb-0">Resolved</p>
+    </div>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="card shadow-sm p-3 mb-4">
+  <form method="GET" class="row g-2 align-items-end">
+    <div class="col-md-4">
+      <label class="form-label mb-1">Filter by Category</label>
+      <select name="category" class="form-select form-select-sm">
+        <option value="">All Categories</option>
+        <option value="hostel"         {% if category_filter == 'hostel' %}selected{% endif %}>Hostel</option>
+        <option value="food"           {% if category_filter == 'food' %}selected{% endif %}>Food</option>
+        <option value="academics"      {% if category_filter == 'academics' %}selected{% endif %}>Academics</option>
+        <option value="infrastructure" {% if category_filter == 'infrastructure' %}selected{% endif %}>Infrastructure</option>
+        <option value="other"          {% if category_filter == 'other' %}selected{% endif %}>Other</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label mb-1">Filter by Status</label>
+      <select name="status" class="form-select form-select-sm">
+        <option value="">All Statuses</option>
+        <option value="pending"     {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+        <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>In Progress</option>
+        <option value="resolved"    {% if status_filter == 'resolved' %}selected{% endif %}>Resolved</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-dark btn-sm w-100">Apply</button>
+    </div>
+    <div class="col-md-2">
+      <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary btn-sm w-100">Clear</a>
+    </div>
+  </form>
+</div>
+
+<!-- Complaints Table -->
+{% if complaints %}
+<div class="card shadow-sm">
+  <table class="table table-hover mb-0">
+    <thead class="table-dark">
+      <tr>
+        <th>Student</th>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Urgency</th>
+        <th>Status</th>
+        <th>Submitted</th>
+        <th>Update Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in complaints %}
+      <tr>
+        <td>{{ c.student.username }}</td>
+        <td>{{ c.title }}</td>
+        <td class="text-capitalize">{{ c.category }}</td>
+        <td>
+          {% if c.urgency == 'high' %}
+            <span class="badge bg-danger">High</span>
+          {% elif c.urgency == 'medium' %}
+            <span class="badge bg-warning text-dark">Medium</span>
+          {% else %}
+            <span class="badge bg-secondary">Low</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if c.status == 'resolved' %}
+            <span class="badge bg-success">Resolved</span>
+          {% elif c.status == 'in_progress' %}
+            <span class="badge bg-info text-dark">In Progress</span>
+          {% else %}
+            <span class="badge bg-secondary">Pending</span>
+          {% endif %}
+        </td>
+        <td>{{ c.created_at|date:"d M Y" }}</td>
+        <td>
+          <form method="POST" action="{% url 'update_status' c.id %}" class="d-flex gap-1">
+            {% csrf_token %}
+            <select name="status" class="form-select form-select-sm" style="width:130px">
+              <option value="pending"     {% if c.status == 'pending' %}selected{% endif %}>Pending</option>
+              <option value="in_progress" {% if c.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+              <option value="resolved"    {% if c.status == 'resolved' %}selected{% endif %}>Resolved</option>
+            </select>
+            <button type="submit" class="btn btn-sm btn-dark">Save</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+  <h5>No complaints found</h5>
+  <p>Try clearing the filters.</p>
+</div>
+{% endif %}
+
+{% endblock %}
