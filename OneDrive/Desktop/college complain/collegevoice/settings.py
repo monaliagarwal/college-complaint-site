@@ -2,17 +2,15 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
-# BASE_DIR first
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# load_dotenv AFTER BASE_DIR
 load_dotenv(BASE_DIR / '.env')
 
-SECRET_KEY = 'django-insecure-c8eup!z!y_q2=xa^+x5e%0r_q0dk15g7yx1kt=-&qqfen(_bfg'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-c8eup!z!y_q2=xa^+x5e%0r_q0dk15g7yx1kt=-&qqfen(_bfg')
 
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -26,6 +24,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -72,4 +71,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
