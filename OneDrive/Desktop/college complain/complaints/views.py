@@ -61,8 +61,7 @@ def logout_view(request):
 # ─── STUDENT VIEWS ────────────────────────────────────────
 
 @login_required
-@student_required
-def submit_complaint(request):
+def submit_complaint(request):  # removed @student_required
     if request.method == 'POST':
         form = ComplaintForm(request.POST)
         if form.is_valid():
@@ -87,8 +86,7 @@ def submit_complaint(request):
 
 
 @login_required
-@student_required
-def student_dashboard(request):
+def student_dashboard(request):  # removed @student_required
     complaints = Complaint.objects.filter(student=request.user)
 
     total    = complaints.count()
@@ -167,4 +165,3 @@ def complaint_detail(request, complaint_id):
         return redirect('student_dashboard')
 
     return render(request, 'complaints/complaint_detail.html', {'complaint': complaint})
-    
